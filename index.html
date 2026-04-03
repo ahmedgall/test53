@@ -3,231 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Win100 Ultra Pro | النسخة الملكية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Win100 AI | المساعد الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root { --gold: #f59e0b; --bg: #020617; --card: #1e293b66; --border: rgba(245, 158, 11, 0.3); }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 100px; overflow-x: hidden; }
-        
-        /* الهيدر والمحفظة */
-        .header { position: sticky; top: 0; background: rgba(2,6,23,0.95); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 1000; backdrop-filter: blur(10px); }
-        .bal-box { background: var(--card); border: 1px solid var(--gold); padding: 5px 15px; border-radius: 50px; color: var(--gold); font-weight: bold; font-size: 14px; }
-        
-        /* كروت الماتشات */
-        .match-card { background: var(--card); margin: 12px; padding: 20px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; }
-        .match-card:active { transform: scale(0.97); }
-        
-        /* الأسواق والأزرار */
-        .market-box { background: rgba(255,255,255,0.03); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .market-title { color: var(--gold); font-weight: 900; margin-bottom: 12px; font-size: 14px; border-right: 3px solid var(--gold); padding-right: 8px; }
-        
-        .odds-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .odds-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        .odd-btn { background: #0f172a; border: 1px solid var(--border); padding: 12px 5px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .odd-btn:active { background: var(--gold); color: #000; }
-        .odd-btn b { display: block; color: var(--gold); font-size: 17px; margin-top: 4px; }
-        .odd-btn span { font-size: 11px; color: #94a3b8; font-weight: bold; }
+        :root {
+            --primary: #f59e0b; /* ذهبي */
+            --bg-dark: #020617;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
 
-        /* الشيت العائم */
-        .sheet { position: fixed; bottom: -100%; left: 0; width: 100%; height: 85vh; background: #0f172a; border-top: 3px solid var(--gold); border-radius: 30px 30px 0 0; z-index: 3000; transition: 0.4s cubic-bezier(0, 1, 0.5, 1); padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .sheet.active { bottom: 0; }
-        
-        .fab-gold { position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(245,158,11,0.5); z-index: 2000; border: none; }
-        
-        .action-btn { background: var(--gold); color: #000; width: 100%; padding: 16px; border: none; border-radius: 15px; font-weight: 900; font-size: 16px; margin-top: 10px; cursor: pointer; }
-        .input-code { width: 100%; padding: 15px; background: #020617; border: 1px solid var(--border); border-radius: 12px; color: #fff; text-align: center; font-size: 18px; margin-bottom: 10px; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at top, #1e293b, #020617);
+            background-attachment: fixed;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-        #loader { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* هيدر الشات */
+        .chat-header {
+            padding: 20px;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .ai-status {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 20px;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .header-info h2 { font-size: 16px; margin: 0; font-weight: 900; }
+        .header-info span { font-size: 10px; color: #10b981; font-weight: 700; }
+
+        /* منطقة الرسائل */
+        #chat-flow {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            scrollbar-width: none;
+        }
+        #chat-flow::-webkit-scrollbar { display: none; }
+
+        .msg {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 22px;
+            font-size: 14px;
+            line-height: 1.6;
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bot-msg {
+            align-self: flex-start;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-bottom-right-radius: 4px;
+            color: #e2e8f0;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), #d97706);
+            color: #000;
+            font-weight: 700;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.2);
+        }
+
+        /* منطقة الإدخال */
+        .input-box {
+            padding: 20px;
+            background: rgba(2, 6, 23, 0.9);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        #userInput {
+            flex: 1;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 15px 20px;
+            border-radius: 18px;
+            color: #fff;
+            font-family: 'Cairo';
+            outline: none;
+            transition: 0.3s;
+        }
+
+        #userInput:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+
+        .send-btn {
+            background: var(--primary);
+            border: none;
+            width: 55px;
+            height: 52px;
+            border-radius: 18px;
+            color: #000;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:active { transform: scale(0.9); }
+
+        /* لودينج خفيف */
+        .typing { font-style: italic; opacity: 0.7; font-size: 12px; }
+
     </style>
 </head>
 <body>
 
-    <div id="loader"><i class="fas fa-crown fa-spin" style="font-size: 40px; color: var(--gold);"></i></div>
+    <header class="chat-header">
+        <div class="ai-status"><i class="fas fa-robot"></i></div>
+        <div class="header-info">
+            <h2>مساعد Win100 الذكي</h2>
+            <span><i class="fas fa-circle"></i> متصل وبحلل البيانات..</span>
+        </div>
+        <div style="margin-right: auto;">
+            <button onclick="window.location.href='home.html'" style="background:none; border:none; color:#64748b; font-size:20px;"><i class="fas fa-house"></i></button>
+        </div>
+    </header>
 
-    <div class="header">
-        <div style="font-weight: 900; font-size: 20px; color: var(--gold);">WIN100 PRO</div>
-        <div class="bal-box" id="user-balance">0.00 ج.م</div>
+    <div id="chat-flow">
+        <div class="msg bot-msg">
+            يا هلا بيك في <b>Win100</b>! 🔥 
+            أنا مساعدك الشخصي المدعوم بالذكاء الاصطناعي.. تحب تتوقع نتيجة ماتش إيه النهاردة؟ أو محتاج استراتيجية لألعاب الكازينو؟ أنا معاك!
+        </div>
     </div>
 
-    <div id="matches-container"></div>
-
-    <button class="fab-gold" onclick="openSlip()">
-        <div style="position:absolute; top:0; right:0; background:#ef4444; width:22px; height:22px; border-radius:50%; font-size:11px; display:flex; align-items:center; justify-content:center; color:#fff;" id="slip-count">0</div>
-        <i class="fas fa-receipt" style="font-size:24px; color:#000;"></i>
-    </button>
-
-    <div id="main-sheet" class="sheet">
-        <div style="text-align:center; padding:10px;" onclick="closeSheet()"><i class="fas fa-chevron-down" style="color:#475569; font-size:24px;"></i></div>
-        <div id="sheet-body"></div>
+    <div class="input-box">
+        <input type="text" id="userInput" placeholder="اسألني عن الماتشات أو الألعاب..." autocomplete="off">
+        <button class="send-btn" onclick="askAI()"><i class="fas fa-paper-plane"></i></button>
     </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, updateDoc, increment, collection, addDoc, serverTimestamp, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+    <script>
+        const API_KEY = "AIzaSyD7DJcm6QuBHsbbbv0IgemzAyYsw9BUxCw";
+        const flow = document.getElementById('chat-flow');
+        const input = document.getElementById('userInput');
 
-    const firebaseConfig = { apiKey: "AIzaSyAzcP_T8x5ouwwKkhadtBTdsUxk3XqwJec", authDomain: "vexa-4b2fb.firebaseapp.com", projectId: "vexa-4b2fb", appId: "1:977620445308:web:fec22230e1fbb30c8881f9" };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+        async function askAI() {
+            const text = input.value.trim();
+            if (!text) return;
 
-    let currentSlip = [];
-    const API_KEY = '4a63ffac5fe58a9ec09b22e305c61c02';
+            // إضافة رسالة المستخدم
+            addMessage(text, 'user-msg');
+            input.value = "";
+            
+            // إضافة رسالة لودينج
+            const loadingId = "loading-" + Date.now();
+            addMessage("بيفكر ثواني... ⚡", 'bot-msg typing', loadingId);
 
-    onAuthStateChanged(auth, (user) => {
-        if(user) {
-            onSnapshot(doc(db, "users", user.uid), (snap) => {
-                if(snap.exists()) document.getElementById('user-balance').innerText = snap.data().walletBalance.toLocaleString() + " ج.م";
-                document.getElementById('loader').style.display = 'none';
-            });
-            fetchMatches();
-        } else { window.location.href = 'index.html'; }
-    });
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `أنت مساعد ذكي خبير في موقع Win100 للمراهنات الرياضية والكازينو. 
+                                هدفك: مساعدة المستخدمين وتحليل المباريات وتوضيح قوانين الألعاب (Aviator, Mines, Roulette). 
+                                هويتك: مرح، ذكي، وتستخدم اللهجة المصرية الاحترافية.
+                                تنبيه: لا تضمن الربح أبداً، قل دائماً "العب بذكاء وللمتعة".
+                                سؤال المستخدم: ${text}`
+                            }]
+                        }]
+                    })
+                });
 
-    async function fetchMatches() {
-        try {
-            const res = await fetch(`https://api.the-odds-api.com/v4/sports/soccer_epl/odds/?apiKey=${API_KEY}&regions=eu&markets=h2h,totals`);
-            const data = await res.json();
-            document.getElementById('matches-container').innerHTML = data.map(m => `
-                <div class="match-card" onclick='showMarkets(${JSON.stringify(m)})'>
-                    <div style="text-align:center; font-size:11px; color:var(--gold); margin-bottom:10px;">${new Date(m.commence_time).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</div>
-                    <div style="display:flex; justify-content:space-around; align-items:center; text-align:center;">
-                        <b style="width:40%">${m.home_team}</b>
-                        <span style="color:var(--gold); font-weight:900;">VS</span>
-                        <b style="width:40%">${m.away_team}</b>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) { console.error("API Error"); }
-    }
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
 
-    const translatePick = (name, marketKey, match) => {
-        if (marketKey === 'h2h') {
-            if (name === 'Draw') return 'تعادل (X)';
-            return name === match.home_team ? 'فوز (1)' : 'فوز (2)';
-        }
-        if (marketKey === 'totals') {
-            return (name === 'Over' ? 'أكثر من' : 'أقل من');
-        }
-        return name;
-    };
+                // حذف اللودينج وإضافة الرد الحقيقي
+                document.getElementById(loadingId).remove();
+                addMessage(aiText, 'bot-msg');
 
-    window.showMarkets = (m) => {
-        const body = document.getElementById('sheet-body');
-        document.getElementById('main-sheet').classList.add('active');
-        let html = `<h3 style="text-align:center; margin-bottom:20px;">${m.home_team} vs ${m.away_team}</h3>`;
-        
-        m.bookmakers[0].markets.forEach(market => {
-            if (market.key === 'h2h') {
-                const h = market.outcomes.find(o => o.name === m.home_team);
-                const d = market.outcomes.find(o => o.name === 'Draw');
-                const a = market.outcomes.find(o => o.name === m.away_team);
-                
-                html += `
-                <div class="market-box">
-                    <div class="market-title">النتيجة النهائية (1 X 2)</div>
-                    <div class="odds-grid-3">
-                        <div class="odd-btn" onclick="addToSlip('${m.home_team} vs ${m.away_team}', 'فوز 1', ${h.price})"><span>فوز 1</span><b>${h.price}</b></div>
-                        <div class="odd-btn" onclick="addToSlip('${m.home_team} vs ${m.away_team}', 'تعادل X', ${d.price})"><span>تعادل X</span><b>${d.price}</b></div>
-                        <div class="odd-btn" onclick="addToSlip('${m.home_team} vs ${m.away_team}', 'فوز 2', ${a.price})"><span>فوز 2</span><b>${a.price}</b></div>
-                    </div>
-                </div>`;
-            } else {
-                html += `
-                <div class="market-box">
-                    <div class="market-title">إجمالي الأهداف (Over/Under)</div>
-                    <div class="odds-grid-2">
-                        ${market.outcomes.map(o => `
-                            <div class="odd-btn" onclick="addToSlip('${m.home_team} vs ${m.away_team}', '${translatePick(o.name, 'totals')} ${o.point}', ${o.price})">
-                                <span>${translatePick(o.name, 'totals')} ${o.point}</span>
-                                <b>${o.price}</b>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>`;
+            } catch (error) {
+                document.getElementById(loadingId).innerText = "حصل مشكلة في الشبكة، جرب تسألني تاني يا بطل!";
+                console.error(error);
             }
-        });
-        body.innerHTML = html + `<button class="action-btn" onclick="openSlip()">فتح القسيمة (${currentSlip.length})</button>`;
-    };
-
-    window.addToSlip = (match, pick, price) => {
-        currentSlip.push({ match, pick, price });
-        document.getElementById('slip-count').innerText = currentSlip.length;
-        alert(`تمت إضافة ${pick} ✅`);
-    };
-
-    window.openSlip = () => {
-        const body = document.getElementById('sheet-body');
-        document.getElementById('main-sheet').classList.add('active');
-        
-        if(currentSlip.length === 0) {
-            body.innerHTML = `
-                <div style="text-align:center; padding:30px;">
-                    <i class="fas fa-ticket-alt" style="font-size:50px; color:#1e293b; margin-bottom:20px;"></i>
-                    <p style="color:#94a3b8;">القسيمة فارغة</p>
-                    <div style="background:var(--card); padding:20px; border-radius:20px; border:1px solid var(--border); margin-top:20px;">
-                        <input type="text" id="coupon-load-input" class="input-code" placeholder="ادخل كود القسيمة">
-                        <button class="action-btn" onclick="loadCoupon()">تحميل القسيمة الآن</button>
-                    </div>
-                </div>`;
-            return;
         }
 
-        const totalOdds = currentSlip.reduce((acc, curr) => acc * curr.price, 1).toFixed(2);
-        body.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="margin:0">قسيمة الرهان</h3>
-                <button onclick="copySlipCode()" style="background:#334155; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-size:12px;"><i class="fas fa-copy"></i> نسخ الكود</button>
-            </div>
-            ${currentSlip.map((s, i) => `
-                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>${s.match}</b><br><small style="color:var(--gold)">${s.pick}</small></div>
-                    <div style="display:flex; align-items:center; gap:10px;"><b>${s.price}</b> <i class="fas fa-trash" onclick="removeBet(${i})" style="color:#ef4444"></i></div>
-                </div>
-            `).join('')}
-            <div style="background:var(--card); padding:15px; border-radius:15px; border:1px solid var(--gold); margin-top:20px;">
-                <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>إجمالي الأودز:</span><span style="color:var(--gold); font-size:20px;">${totalOdds}</span></div>
-                <input type="number" id="bet-amt" placeholder="المبلغ (ج.م)" style="width:100%; margin:15px 0; padding:15px; background:#000; border:1px solid #334155; border-radius:12px; color:#fff; text-align:center; font-size:18px;">
-                <button class="action-btn" onclick="confirmBet()">تأكيد وخصم الرصيد</button>
-            </div>`;
-    };
+        function addMessage(text, className, id = null) {
+            const div = document.createElement('div');
+            div.className = `msg ${className}`;
+            if (id) div.id = id;
+            div.innerHTML = text.replace(/\n/g, '<br>');
+            flow.appendChild(div);
+            flow.scrollTop = flow.scrollHeight;
+        }
 
-    window.copySlipCode = async () => {
-        if(currentSlip.length === 0) return;
-        const code = "W100-" + Math.random().toString(36).substr(2, 4).toUpperCase();
-        await setDoc(doc(db, "coupons", code), { items: currentSlip });
-        navigator.clipboard.writeText(code);
-        alert("تم نسخ الكود: " + code);
-    };
-
-    window.loadCoupon = async () => {
-        const code = document.getElementById('coupon-load-input').value.toUpperCase().trim();
-        if(!code) return;
-        const snap = await getDoc(doc(db, "coupons", code));
-        if(snap.exists()) {
-            currentSlip = snap.data().items;
-            document.getElementById('slip-count').innerText = currentSlip.length;
-            openSlip();
-            alert("تم تحميل القسيمة بنجاح! 🎯");
-        } else { alert("الكود غير صحيح"); }
-    };
-
-    window.removeBet = (i) => { currentSlip.splice(i,1); document.getElementById('slip-count').innerText = currentSlip.length; openSlip(); };
-    window.closeSheet = () => document.getElementById('main-sheet').classList.remove('active');
-
-    window.confirmBet = async () => {
-        const amt = parseFloat(document.getElementById('bet-amt').value);
-        if(!amt || amt < 5) return alert("أقل مبلغ للرهان 5 ج.م");
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        const userSnap = await getDoc(userRef);
-        if(userSnap.data().walletBalance >= amt) {
-            await updateDoc(userRef, { walletBalance: increment(-amt) });
-            alert("تم الرهان بنجاح! 💸");
-            currentSlip = []; document.getElementById('slip-count').innerText = 0; closeSheet();
-        } else { alert("رصيدك لا يكفي!"); }
-    };
-</script>
+        // دعم زر Enter
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') askAI();
+        });
+    </script>
 </body>
 </html>
