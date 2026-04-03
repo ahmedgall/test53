@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Win100 Ultra Pro | Official</title>
+    <title>Win100 Ultra Pro | Markets</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -14,21 +14,25 @@
         .leagues-nav { display: flex; gap: 10px; overflow-x: auto; padding: 15px; scrollbar-width: none; }
         .league-btn { background: var(--card); border: 1px solid var(--border); padding: 8px 20px; border-radius: 12px; white-space: nowrap; cursor: pointer; transition: 0.3s; color: #94a3b8; }
         .league-btn.active { background: var(--gold); color: #000; font-weight: bold; border-color: var(--gold); }
-        .match-card { background: var(--card); margin: 10px 15px; padding: 20px; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(10px); animation: slideUp 0.4s ease; }
-        .match-time { font-size: 11px; color: var(--gold); text-align: center; margin-bottom: 10px; opacity: 0.8; }
+        
+        .match-card { background: var(--card); margin: 10px 15px; padding: 20px; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(10px); cursor: pointer; }
         .teams { display: flex; justify-content: space-around; align-items: center; text-align: center; }
         .team-name { width: 40%; font-weight: 700; font-size: 14px; }
-        .fab-gold { position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(245,158,11,0.5); z-index: 2000; cursor: pointer; transition: 0.3s; border: none; }
-        .fab-gold:active { transform: scale(0.9); }
-        .count { position: absolute; top: 0; right: 0; background: #ef4444; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 2px solid var(--bg); }
-        .sheet { position: fixed; bottom: -100%; left: 0; width: 100%; height: 85vh; background: #0f172a; border-top: 3px solid var(--gold); border-radius: 30px 30px 0 0; z-index: 3000; transition: 0.4s cubic-bezier(0, 1, 0.5, 1); padding: 25px; box-sizing: border-box; overflow-y: auto; }
+
+        /* الأسواق داخل الشيت */
+        .market-section { margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; }
+        .market-title { color: var(--gold); font-weight: bold; margin-bottom: 10px; border-right: 3px solid var(--gold); padding-right: 10px; font-size: 14px; }
+        .odds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .odd-item { background: var(--card); padding: 12px; border-radius: 10px; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.2s; }
+        .odd-item:active { background: var(--gold); color: #000; }
+
+        .fab-gold { position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(245,158,11,0.5); z-index: 2000; }
+        .count { position: absolute; top: 0; right: 0; background: #ef4444; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        
+        .sheet { position: fixed; bottom: -100%; left: 0; width: 100%; height: 85vh; background: #0f172a; border-top: 3px solid var(--gold); border-radius: 30px 30px 0 0; z-index: 3000; transition: 0.4s; padding: 25px; box-sizing: border-box; overflow-y: auto; }
         .sheet.active { bottom: 0; }
-        .bet-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid var(--gold); }
-        .action-btn { background: var(--gold); color: #000; width: 100%; padding: 16px; border: none; border-radius: 15px; font-weight: 900; font-size: 16px; margin-top: 10px; cursor: pointer; }
-        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .copy-btn { background: #334155; color: #fff; padding: 10px 15px; border-radius: 10px; font-size: 12px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .action-btn { background: var(--gold); color: #000; width: 100%; padding: 16px; border: none; border-radius: 15px; font-weight: 900; }
         #loader { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -43,30 +47,19 @@
     <div class="leagues-nav">
         <div class="league-btn active" onclick="changeLeague('soccer_epl', this)">الدوري الإنجليزي</div>
         <div class="league-btn" onclick="changeLeague('soccer_spain_la_liga', this)">الدوري الإسباني</div>
-        <div class="league-btn" onclick="changeLeague('soccer_uefa_champs_league', this)">دوري الابطال</div>
+        <div class="league-btn" onclick="changeLeague('soccer_uefa_champs_league', this)">دوري الأبطال</div>
     </div>
 
     <div id="matches-container"></div>
 
     <button class="fab-gold" onclick="openSlip()">
         <div class="count" id="slip-count">0</div>
-        <i class="fas fa-receipt"></i>
+        <i class="fas fa-receipt" style="color:#000; font-size:24px;"></i>
     </button>
 
     <div id="main-sheet" class="sheet">
-        <div style="text-align:center; margin-bottom:20px;" onclick="closeSheet()"><i class="fas fa-chevron-down" style="color:#475569; font-size:24px;"></i></div>
-        
-        <div id="slip-content"></div>
-
-        <div id="empty-slip" style="display:none; text-align:center; padding:30px;">
-            <i class="fas fa-ticket-alt" style="font-size:60px; color:#1e293b; margin-bottom:20px;"></i>
-            <p style="color:#94a3b8; margin-bottom:25px;">القسيمة فارغة حالياً</p>
-            <div style="background:var(--card); padding:20px; border-radius:20px; border:1px solid var(--border);">
-                <p style="font-size:13px; margin-bottom:15px;">هل لديك كود قسيمة؟</p>
-                <input type="text" id="coupon-input" placeholder="مثال: W100-AB12" style="width:100%; padding:15px; background:#020617; border:1px solid var(--border); border-radius:12px; color:#fff; text-align:center; font-family:monospace; font-size:18px;">
-                <button class="action-btn" onclick="loadCouponFromFirebase()">تحميل القسيمة الآن</button>
-            </div>
-        </div>
+        <div id="sheet-header" style="text-align:center; margin-bottom:20px;" onclick="closeSheet()"><i class="fas fa-chevron-down"></i></div>
+        <div id="sheet-body"></div>
     </div>
 
 <script type="module">
@@ -74,6 +67,7 @@
     import { getFirestore, doc, onSnapshot, updateDoc, increment, collection, addDoc, serverTimestamp, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
+    // نفس بيانات الفايربيس بتاعتك
     const firebaseConfig = {
         apiKey: "AIzaSyAzcP_T8x5ouwwKkhadtBTdsUxk3XqwJec",
         authDomain: "vexa-4b2fb.firebaseapp.com",
@@ -86,154 +80,153 @@
     const auth = getAuth(app);
 
     let currentSlip = [];
-    let currentLeague = 'soccer_epl';
     const API_KEY = '4a63ffac5fe58a9ec09b22e305c61c02';
 
     onAuthStateChanged(auth, (user) => {
         if(user) {
             onSnapshot(doc(db, "users", user.uid), (snap) => {
-                if(snap.exists()) document.getElementById('user-balance').innerText = snap.data().walletBalance.toLocaleString('en-US', {minimumFractionDigits:2}) + " ج.م";
+                if(snap.exists()) document.getElementById('user-balance').innerText = snap.data().walletBalance.toLocaleString() + " ج.م";
                 document.getElementById('loader').style.display = 'none';
             });
-            fetchMatches(currentLeague);
+            fetchMatches('soccer_epl');
         } else { window.location.href = 'index.html'; }
     });
 
     window.changeLeague = (league, btn) => {
         document.querySelectorAll('.league-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        currentLeague = league;
         fetchMatches(league);
     };
 
+    // سحب الماتشات مع أسواق إضافية
     async function fetchMatches(league) {
-        document.getElementById('matches-container').innerHTML = '<p style="text-align:center; padding:50px; opacity:0.5;">جاري سحب الماتشات...</p>';
+        document.getElementById('matches-container').innerHTML = '<p style="text-align:center; padding:50px; opacity:0.5;">جاري سحب الأسواق المتاحة...</p>';
         try {
-            const res = await fetch(`https://api.the-odds-api.com/v4/sports/${league}/odds/?apiKey=${API_KEY}&regions=eu&markets=h2h`);
+            // طلبنا h2h (فوز وخسارة) و totals (الأهداف)
+            const res = await fetch(`https://api.the-odds-api.com/v4/sports/${league}/odds/?apiKey=${API_KEY}&regions=eu&markets=h2h,totals&oddsFormat=decimal`);
             const data = await res.json();
             renderMatches(data);
-        } catch (e) { alert("فشل تحديث البيانات"); }
+        } catch (e) { alert("حدث خطأ في جلب البيانات"); }
     }
 
     function renderMatches(data) {
         const container = document.getElementById('matches-container');
-        if(!data.length) { container.innerHTML = '<p style="text-align:center; padding:50px;">لا توجد مباريات متاحة حالياً</p>'; return; }
         container.innerHTML = data.map(m => `
-            <div class="match-card" onclick="addToSlip('${m.id}', '${m.home_team} vs ${m.away_team}', ${m.bookmakers[0].markets[0].outcomes[0].price})">
-                <div class="match-time">${new Date(m.commence_time).toLocaleString('ar-EG', {weekday:'long', hour:'2-digit', minute:'2-digit'})}</div>
+            <div class="match-card" onclick='viewMarkets(${JSON.stringify(m)})'>
+                <div style="font-size:11px; color:var(--gold); text-align:center; margin-bottom:10px;">${new Date(m.commence_time).toLocaleString('ar-EG', {weekday:'long', hour:'2-digit', minute:'2-digit'})}</div>
                 <div class="teams">
                     <div class="team-name">${m.home_team}</div>
-                    <div style="color:var(--gold); font-weight:900; font-size:12px;">VS</div>
+                    <div style="color:var(--gold); font-weight:bold;">VS</div>
                     <div class="team-name">${m.away_team}</div>
                 </div>
-                <div style="text-align:center; margin-top:15px; font-size:12px; color:#94a3b8;">أودز الفوز: <span style="color:var(--gold); font-weight:bold;">${m.bookmakers[0].markets[0].outcomes[0].price}</span></div>
+                <div style="text-align:center; margin-top:10px; font-size:12px; color:#94a3b8;">عرض كافة الأسواق 🔥</div>
             </div>
         `).join('');
     }
 
-    window.addToSlip = (id, match, price) => {
-        if(currentSlip.find(i => i.id === id)) return;
-        currentSlip.push({id, match, price});
+    // وظيفة عرض كل الأسواق عند الضغط على الماتش
+    window.viewMarkets = (match) => {
+        const sheet = document.getElementById('main-sheet');
+        const body = document.getElementById('sheet-body');
+        sheet.classList.add('active');
+
+        let html = `<div style="text-align:center; margin-bottom:20px;">
+                        <h3 style="margin:0">${match.home_team} vs ${match.away_team}</h3>
+                    </div>`;
+
+        // استخراج الأسواق من أول Bookmaker متاح
+        const bookmaker = match.bookmakers[0];
+        if(!bookmaker) { body.innerHTML = html + "<p>لا توجد أسواق متاحة حالياً</p>"; return; }
+
+        bookmaker.markets.forEach(market => {
+            let marketTitle = market.key === 'h2h' ? 'النتيجة النهائية' : 'إجمالي الأهداف (Totals)';
+            html += `
+                <div class="market-section">
+                    <div class="market-title">${marketTitle}</div>
+                    <div class="odds-grid">
+                        ${market.outcomes.map(o => `
+                            <div class="odd-item" onclick="selectOdd('${match.home_team} vs ${match.away_team}', '${o.name}', ${o.price})">
+                                <div style="font-size:12px; color:#94a3b8;">${o.name}</div>
+                                <div style="font-size:16px; font-weight:bold; color:var(--gold);">${o.price}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        });
+
+        body.innerHTML = html + `<button class="action-btn" onclick="openSlip()">فتح القسيمة الآن</button>`;
+    };
+
+    window.selectOdd = (matchName, choice, price) => {
+        const betId = matchName + choice;
+        if(currentSlip.find(i => i.id === betId)) return alert("الماتش ده موجود فعلاً");
+        
+        currentSlip.push({ id: betId, match: matchName, choice: choice, price: price });
         updateSlipCount();
-        openSlip();
+        alert(`تمت إضافة: ${choice} بـ أودز ${price}`);
     };
 
     function updateSlipCount() { document.getElementById('slip-count').innerText = currentSlip.length; }
 
     window.openSlip = () => {
         const sheet = document.getElementById('main-sheet');
-        const content = document.getElementById('slip-content');
-        const empty = document.getElementById('empty-slip');
+        const body = document.getElementById('sheet-body');
         sheet.classList.add('active');
 
         if(currentSlip.length === 0) {
-            content.style.display = 'none'; empty.style.display = 'block';
-        } else {
-            content.style.display = 'block'; empty.style.display = 'none';
-            const totalOdds = currentSlip.reduce((acc, curr) => acc * curr.price, 1).toFixed(2);
-            content.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h3 style="margin:0; font-size:18px;">قسيمة الرهان</h3>
-                    <button class="copy-btn" onclick="saveAndCopyCode()">حفظ ونسخ الكود <i class="fas fa-share-nodes"></i></button>
-                </div>
-                ${currentSlip.map((s, i) => `
-                    <div class="bet-item">
-                        <div><div style="font-size:14px; font-weight:bold;">${s.match}</div><div style="color:var(--gold); font-size:12px;">أودز: ${s.price}</div></div>
-                        <i class="fas fa-trash-alt" onclick="removeBet(${i})" style="color:#ef4444; padding:10px;"></i>
-                    </div>
-                `).join('')}
-                <div style="background:rgba(0,0,0,0.4); padding:20px; border-radius:20px; border:1px solid var(--border); margin-top:20px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><span>إجمالي الأودز:</span><b style="color:var(--gold); font-size:20px;">${totalOdds}</b></div>
-                    <input type="number" id="bet-amount" placeholder="مبلغ الرهان (ج.م)" style="width:100%; padding:15px; background:var(--bg); border:1px solid var(--border); color:#fff; border-radius:12px; text-align:center; font-size:18px; margin-bottom:15px;">
-                    <button class="action-btn" id="confirm-bet-btn" onclick="confirmBet()">تأكيد الرهان والخصم</button>
-                </div>
-            `;
+            body.innerHTML = `<div style="text-align:center; padding:50px;"><i class="fas fa-ticket-alt" style="font-size:50px; color:#1e293b;"></i><p>القسيمة فاضية يا بطل</p></div>`;
+            return;
         }
-    };
 
-    window.closeSheet = () => document.getElementById('main-sheet').classList.remove('active');
-    window.removeBet = (i) => { currentSlip.splice(i,1); updateSlipCount(); openSlip(); };
-
-    // --- نظام الفايربيس للأكواد ---
-    window.saveAndCopyCode = async () => {
-        if(currentSlip.length === 0) return;
-        const code = "W100-" + Math.random().toString(36).substr(2, 4).toUpperCase();
-        try {
-            await setDoc(doc(db, "coupons", code), {
-                items: currentSlip,
-                createdAt: serverTimestamp(),
-                createdBy: auth.currentUser.uid
-            });
-            navigator.clipboard.writeText(code);
-            alert("تم حفظ القسيمة بنجاح! كود المشاركة: " + code);
-        } catch (e) { alert("خطأ في حفظ الكود"); }
-    };
-
-    window.loadCouponFromFirebase = async () => {
-        const code = document.getElementById('coupon-input').value.toUpperCase().trim();
-        if(!code) return alert("دخل كود القسيمة");
+        const totalOdds = currentSlip.reduce((acc, curr) => acc * curr.price, 1).toFixed(2);
         
-        try {
-            const snap = await getDoc(doc(db, "coupons", code));
-            if(snap.exists()) {
-                currentSlip = snap.data().items;
-                updateSlipCount();
-                openSlip();
-                alert("تم تحميل القسيمة بنجاح! 🎯");
-            } else { alert("الكود ده غلط أو انتهى!"); }
-        } catch (e) { alert("حدث خطأ أثناء التحميل"); }
+        body.innerHTML = `
+            <h3 style="margin-bottom:20px;">قسيمة الرهان</h3>
+            ${currentSlip.map((s, i) => `
+                <div class="bet-item">
+                    <div>
+                        <div style="font-size:14px; font-weight:bold;">${s.match}</div>
+                        <div style="color:var(--gold); font-size:12px;">اختيارك: ${s.choice} (أودز: ${s.price})</div>
+                    </div>
+                    <i class="fas fa-times-circle" onclick="removeBet(${i})" style="color:#ef4444; font-size:20px;"></i>
+                </div>
+            `).join('')}
+            <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:15px; margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><span>إجمالي الودات:</span><b style="color:var(--gold); font-size:20px;">${totalOdds}</b></div>
+                <input type="number" id="bet-amount" placeholder="مبلغ الرهان" style="width:100%; padding:15px; background:var(--bg); border:1px solid var(--border); color:#fff; border-radius:10px; text-align:center; margin-bottom:15px;">
+                <button class="action-btn" onclick="confirmBet()">تأكيد وخصم الرصيد</button>
+            </div>
+        `;
     };
 
+    window.removeBet = (i) => { currentSlip.splice(i,1); updateSlipCount(); openSlip(); };
+    window.closeSheet = () => document.getElementById('main-sheet').classList.remove('active');
+
+    // تأكيد الرهان (نفس الكود بتاعك بس مع تعديل البيانات المرسلة)
     window.confirmBet = async () => {
         const amt = parseFloat(document.getElementById('bet-amount').value);
-        const user = auth.currentUser;
-        if(!amt || amt < 5) return alert("أقل مبلغ للرهان 5 ج.م");
+        if(!amt || amt < 5) return alert("أقل مبلغ رهان 5 ج.م");
         
-        const btn = document.getElementById('confirm-bet-btn');
-        btn.disabled = true;
-        btn.innerText = "جاري المعالجة...";
-
+        const user = auth.currentUser;
         try {
             const userRef = doc(db, "users", user.uid);
             const userSnap = await getDoc(userRef);
-            const balance = userSnap.data().walletBalance || 0;
+            if(userSnap.data().walletBalance < amt) return alert("رصيدك ميقضيش!");
 
-            if(balance < amt) {
-                alert("رصيدك لا يكفي! اشحن محفظتك.");
-            } else {
-                await updateDoc(userRef, { walletBalance: increment(-amt) });
-                await addDoc(collection(db, "users", user.uid, "transactions"), {
-                    title: "رهان رياضي مباشر",
-                    amount: amt,
-                    type: "loss",
-                    status: "pending",
-                    timestamp: serverTimestamp()
-                });
-                alert("تم قبول الرهان وخصم المبلغ! 💸");
-                currentSlip = []; updateSlipCount(); closeSheet();
-            }
-        } catch (e) { alert("عطل فني في السيرفر"); }
-        btn.disabled = false; btn.innerText = "تأكيد الرهان والخصم";
+            await updateDoc(userRef, { walletBalance: increment(-amt) });
+            await addDoc(collection(db, "users", user.uid, "transactions"), {
+                title: "رهان من الأسواق المتعددة",
+                amount: amt,
+                type: "loss",
+                status: "pending",
+                timestamp: serverTimestamp(),
+                details: currentSlip
+            });
+
+            alert("تم الرهان بنجاح! 🚀");
+            currentSlip = []; updateSlipCount(); closeSheet();
+        } catch (e) { alert("حدث خطأ في النظام"); }
     };
 </script>
 </body>
