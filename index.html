@@ -2,295 +2,116 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexal Premium Invoicing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة فاتورة | الناصرية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
-        :root {
-            --primary: #10b981; /* زمردي عالمي */
-            --primary-hover: #059669;
-            --dark: #0f172a; /* كحلي غامق جداً */
-            --secondary: #64748b;
-            --bg: #f1f5f9;
-            --white: #ffffff;
-            --danger: #ef4444;
-            --accent: #3b82f6;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background: var(--bg); 
-            font-family: 'Tajawal', sans-serif; 
-            margin: 0; 
-            padding: 15px; 
-            color: var(--dark);
-        }
-
-        .app-container {
-            max-width: 900px;
-            margin: auto;
-            background: var(--white);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08);
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.7);
-        }
-
-        /* الهيدر الاحترافي */
-        .glass-header {
-            background: var(--dark);
-            color: white;
-            padding: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-
-        .brand h1 { margin: 0; font-size: 22px; letter-spacing: 1px; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .brand span { color: var(--primary); }
-
-        .client-meta { text-align: left; }
-        .client-meta input {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 10px;
-            text-align: left;
-            font-weight: bold;
-            outline: none;
-        }
-
-        /* منطقة الجدول */
-        .content-body { padding: 25px; }
-
-        .table-card {
-            background: #fff;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 15px; text-align: right; color: var(--secondary); font-size: 13px; text-transform: uppercase; }
-        td { padding: 15px; border-top: 1px solid #f1f5f9; }
-
-        input.row-input {
-            width: 100%;
-            border: 1px solid transparent;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 15px;
-            background: #f8fafc;
-            transition: 0.2s;
-        }
-
-        input.row-input:focus {
-            background: #fff;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-        }
-
-        /* أزرار الأكشن - نظام Grid عالمي */
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            border: none;
-            padding: 14px;
-            border-radius: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 14px;
-        }
-
-        .btn-add { grid-column: span 4; background: var(--dark); color: white; }
-        .btn-add:hover { background: #1e293b; transform: translateY(-2px); }
-
+        :root { --primary: #10b981; --dark: #0f172a; --bg: #f1f5f9; }
+        * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+        body { background: var(--bg); padding: 10px; margin: 0; }
+        .app-container { max-width: 600px; margin: auto; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 10px; outline: none; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: #f8fafc; padding: 10px; font-size: 13px; border: 1px solid #eee; }
+        td { border: 1px solid #eee; padding: 5px; }
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .btn-save { background: var(--primary); color: white; }
-        .btn-img { background: var(--accent); color: white; }
-        .btn-history { background: #f1f5f9; color: var(--dark); }
-        .btn-clear { background: #fff1f2; color: var(--danger); }
-
-        .btn:active { transform: scale(0.95); }
-
-        /* الكارت النهائي للإجمالي */
-        .summary-footer {
-            margin-top: 30px;
-            padding: 25px;
-            background: #f8fafc;
-            border-radius: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .total-label { color: var(--secondary); font-weight: 500; }
-        .total-amount { font-size: 28px; font-weight: 800; color: var(--dark); }
-        .total-amount span { color: var(--primary); font-size: 16px; margin-right: 5px; }
-
-        /* مودال السجل الاحترافي */
-        .modal {
-            display: none; position: fixed; inset: 0; 
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px);
-            z-index: 1000; padding: 20px; align-items: center; justify-content: center;
-        }
-
-        .modal-content {
-            background: white; width: 100%; max-width: 450px; 
-            border-radius: 24px; padding: 30px; position: relative;
-            animation: slideUp 0.4s ease-out;
-        }
-
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } }
-
-        .history-card {
-            background: #f8fafc; padding: 15px; border-radius: 12px;
-            margin-bottom: 10px; display: flex; justify-content: space-between;
-            border: 1px solid #e2e8f0;
-        }
-
-        @media (max-width: 600px) {
-            .actions-grid { grid-template-columns: repeat(2, 1fr); }
-            .btn-add { grid-column: span 2; }
-            .glass-header { flex-direction: column; gap: 15px; text-align: center; }
-            .client-meta input { text-align: center; }
-        }
+        .btn-add { background: var(--dark); color: white; }
+        .btn-view { background: #fff; color: var(--dark); border: 2px solid var(--dark); text-decoration: none; display: block; text-align: center; margin-top: 20px; }
+        .total-box { background: var(--dark); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="app-container" id="mainInvoice">
-    <div class="glass-header">
-        <div class="brand">
-            <h1>NEXAL <span>PRO</span></h1>
-        </div>
-        <div class="client-meta">
-            <input type="text" id="cName" placeholder="إسم العميل هنا...">
-            <div id="dateNow" style="font-size: 12px; margin-top: 5px; opacity: 0.7;"></div>
-        </div>
+<div class="app-container">
+    <header>
+        <h1 style="margin:0; color: var(--dark);">إنشاء فاتورة <span style="color:var(--primary)">PRO</span></h1>
+    </header>
+
+    <input type="text" id="clientName" placeholder="اسم العميل">
+    
+    <table>
+        <thead>
+            <tr>
+                <th>الصنف</th>
+                <th style="width:60px">كمية</th>
+                <th style="width:80px">سعر</th>
+                <th>إجمالي</th>
+            </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+    </table>
+
+    <button class="btn btn-add" onclick="addNewRow()">+ إضافة صنف</button>
+    <button class="btn btn-save" onclick="saveToVexa()">💾 حفظ سحابي</button>
+
+    <div class="total-box">
+        <div style="font-size:24px; font-weight:800;"><span id="finalTotal">0</span> ر.س</div>
     </div>
 
-    <div class="content-body">
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 45%;">الصنف</th>
-                        <th>الكمية</th>
-                        <th>السعر</th>
-                        <th>الإجمالي</th>
-                    </tr>
-                </thead>
-                <tbody id="invoiceList"></tbody>
-            </table>
-        </div>
-
-        <div class="actions-grid">
-            <button class="btn btn-add" onclick="addRow()">+ إضافة بند جديد للجدول</button>
-            <button class="btn btn-save" onclick="saveInv()">💾 حفظ</button>
-            <button class="btn btn-img" onclick="exportImg()">📸 صورة</button>
-            <button class="btn btn-history" onclick="showHistory()">📂 السجل</button>
-            <button class="btn btn-clear" onclick="resetInv()">🗑️ مسح</button>
-        </div>
-
-        <div class="summary-footer">
-            <div class="total-label">المبلغ الإجمالي المستحق</div>
-            <div class="total-amount"><span id="gTotal">0.00</span> <span>ر.س</span></div>
-        </div>
-    </div>
-</div>
-
-<div id="hModal" class="modal">
-    <div class="modal-content">
-        <h2 style="margin-top:0">سجل الفواتير</h2>
-        <div id="hList" style="max-height: 300px; overflow-y: auto;"></div>
-        <button class="btn btn-add" style="margin-top:20px" onclick="closeH()">إغلاق السجل</button>
-    </div>
+    <a href="view.html" class="btn btn-view">📂 الذهاب لسجل الفواتير</a>
 </div>
 
 <script>
-    // Initialize
-    document.getElementById('dateNow').innerText = new Date().toLocaleDateString('ar-EG', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-    
-    function addRow() {
-        const body = document.getElementById('invoiceList');
+    const firebaseConfig = {
+        apiKey: "AIzaSyAzcP_T8x5ouwwKkhadtBTdsUxk3XqwJec",
+        authDomain: "vexa-4b2fb.firebaseapp.com",
+        projectId: "vexa-4b2fb",
+        storageBucket: "vexa-4b2fb.firebasestorage.app",
+        messagingSenderId: "977620445308",
+        appId: "1:977620445308:web:71e66418d95c43dc8881f9"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function addNewRow() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><input type="text" placeholder="إسم المنتج" class="row-input n"></td>
-            <td><input type="number" value="1" class="row-input q" oninput="calc()"></td>
-            <td><input type="number" value="0" class="row-input p" oninput="calc()"></td>
-            <td style="font-weight:700; color:var(--primary)"><span class="row-t">0</span></td>
+            <td><input type="text" class="in-name" style="margin:0"></td>
+            <td><input type="number" class="in-qty" oninput="calculate()" style="margin:0"></td>
+            <td><input type="number" class="in-price" oninput="calculate()" style="margin:0"></td>
+            <td style="font-weight:bold; text-align:center;"><span class="in-sub">0</span></td>
         `;
-        body.appendChild(tr);
+        document.getElementById('rows').appendChild(tr);
     }
 
-    function calc() {
+    function calculate() {
         let grand = 0;
-        document.querySelectorAll('#invoiceList tr').forEach(row => {
-            const q = row.querySelector('.q').value || 0;
-            const p = row.querySelector('.p').value || 0;
-            const total = q * p;
-            row.querySelector('.row-t').innerText = total.toLocaleString();
-            grand += total;
+        document.querySelectorAll('#rows tr').forEach(row => {
+            const q = row.querySelector('.in-qty').value || 0;
+            const p = row.querySelector('.in-price').value || 0;
+            const sub = q * p;
+            row.querySelector('.in-sub').innerText = sub;
+            grand += sub;
         });
-        document.getElementById('gTotal').innerText = grand.toLocaleString();
+        document.getElementById('finalTotal').innerText = grand;
     }
 
-    function saveInv() {
-        const name = document.getElementById('cName').value || "عميل عام";
-        const total = document.getElementById('gTotal').innerText;
-        const data = { name, total, time: new Date().toLocaleString('ar-EG') };
-        let arc = JSON.parse(localStorage.getItem('nexal_arc') || "[]");
-        arc.push(data);
-        localStorage.setItem('nexal_arc', JSON.stringify(arc));
-        alert('✅ تم الحفظ في أرشيف نيكسال');
-    }
-
-    function exportImg() {
-        const btnArea = document.querySelector('.actions-grid');
-        btnArea.style.opacity = '0'; // إخفاء الأزرار مؤقتاً
-        html2canvas(document.getElementById('mainInvoice'), { scale: 2 }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `Nexal-Invoice-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            btnArea.style.opacity = '1';
+    async function saveToVexa() {
+        const items = [];
+        document.querySelectorAll('#rows tr').forEach(row => {
+            const name = row.querySelector('.in-name').value;
+            if(name) {
+                items.push({ item: name, qty: row.querySelector('.in-qty').value, price: row.querySelector('.in-price').value, total: row.querySelector('.in-sub').innerText });
+            }
         });
+        if(items.length === 0) return alert("أضف بيانات!");
+        try {
+            await db.collection("invoices").add({
+                customer: document.getElementById('clientName').value || "عميل بدون اسم",
+                totalAmount: document.getElementById('finalTotal').innerText,
+                billItems: items,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("✅ تم الحفظ!");
+            location.reload();
+        } catch (e) { alert("خطأ!"); }
     }
-
-    function showHistory() {
-        const list = document.getElementById('hList');
-        list.innerHTML = '';
-        const arc = JSON.parse(localStorage.getItem('nexal_arc') || "[]");
-        if(arc.length === 0) list.innerHTML = '<p style="text-align:center; color:var(--secondary)">لا يوجد فواتير محفوظة بعد</p>';
-        arc.reverse().forEach(i => {
-            list.innerHTML += `<div class="history-card">
-                <div><strong>${i.name}</strong><br><small>${i.time}</small></div>
-                <div style="color:var(--primary); font-weight:700">${i.total} ر.س</div>
-            </div>`;
-        });
-        document.getElementById('hModal').style.display = 'flex';
-    }
-
-    function closeH() { document.getElementById('hModal').style.display = 'none'; }
-    function resetInv() { if(confirm('تأكيد مسح البيانات الحالية؟')) { document.getElementById('invoiceList').innerHTML = ''; addRow(); calc(); } }
-
-    addRow(); // Start with one row
+    addNewRow();
 </script>
-
 </body>
 </html>
+
