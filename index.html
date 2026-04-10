@@ -20,6 +20,7 @@
         .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .btn-save { background: var(--primary); color: white; }
         .btn-add { background: var(--dark); color: white; }
+        .btn-delete-all { background: #ef4444; color: white; margin-top: 5px; font-size: 12px; padding: 10px; }
         .btn-view { background: #fff; color: var(--dark); border: 2px solid var(--dark); text-decoration: none; display: block; text-align: center; margin-top: 20px; }
         .total-box { background: var(--dark); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-top: 15px; }
     </style>
@@ -48,12 +49,18 @@
     <button class="btn btn-add" onclick="addNewRow()">+ إضافة صنف</button>
     <button class="btn btn-save" onclick="saveToVexa()">💾 حفظ سحابي</button>
 
+
     <div class="total-box">
         <div style="font-size:24px; font-weight:800;"><span id="finalTotal">0</span> ر.س</div>
     </div>
 
     <a href="view.html" class="btn btn-view">📂 الذهاب لسجل الفواتير</a>
+
+    <button class="btn btn-delete-all" onclick="deleteAllInvoices()">🗑️ حذف جميع الفواتير نهائياً</button>
+
 </div>
+
+
 
 <script>
     const firebaseConfig = {
@@ -110,8 +117,26 @@
             location.reload();
         } catch (e) { alert("خطأ!"); }
     }
+
+    // دالة حذف جميع الفواتير
+    async function deleteAllInvoices() {
+        if (confirm("هل أنت متأكد من حذف جميع الفواتير من السحابة؟ لا يمكن التراجع!")) {
+            try {
+                const snapshot = await db.collection("invoices").get();
+                const batch = db.batch();
+                snapshot.docs.forEach((doc) => {
+                    batch.delete(doc.ref);
+                });
+                await batch.commit();
+                alert("🗑️ تم مسح السجل بالكامل بنجاح!");
+                location.reload();
+            } catch (e) {
+                alert("فشل الحذف: " + e.message);
+            }
+        }
+    }
+
     addNewRow();
 </script>
 </body>
 </html>
-
