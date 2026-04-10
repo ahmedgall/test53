@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل الفواتير | Vexa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <style>
+        :root { --primary: #10b981; --dark: #0f172a; --bg: #f1f5f9; }
+        * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+        body { background: var(--bg); padding: 20px; }
+        .history-container { max-width: 800px; margin: auto; }
+        .bill-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .bill-header { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 14px; padding: 5px 0; border-bottom: 1px dashed #f1f1f1; }
+        .total-line { text-align: left; font-weight: bold; color: var(--primary); font-size: 18px; margin-top: 10px; }
+        .back-btn { display: inline-block; text-decoration: none; color: white; background: var(--dark); padding: 10px 20px; border-radius: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="history-container">
+    <a href="index.html" class="back-btn">⬅️ العودة للإضافة</a>
+    <h1>📂 سجل الفواتير السحابي</h1>
+    <div id="logsList">جاري تحميل الفواتير...</div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAzcP_T8x5ouwwKkhadtBTdsUxk3XqwJec",
+        authDomain: "vexa-4b2fb.firebaseapp.com",
+        projectId: "vexa-4b2fb",
+        storageBucket: "vexa-4b2fb.firebasestorage.app",
+        messagingSenderId: "977620445308",
+        appId: "1:977620445308:web:71e66418d95c43dc8881f9"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    db.collection("invoices").orderBy("timestamp", "desc").onSnapshot(snap => {
+        const list = document.getElementById('logsList');
+        list.innerHTML = '';
+        snap.forEach(doc => {
+            const data = doc.data();
+            const date = data.timestamp ? data.timestamp.toDate().toLocaleString('ar-EG') : 'جاري الحفظ...';
+            
+            let itemsHTML = data.billItems.map(i => `
+                <div class="item-row">
+                    <span>${i.item}</span>
+                    <span>${i.qty}</span>
+                    <span>${i.price}</span>
+                    <span style="font-weight:bold">${i.total}</span>
+                </div>
+            `).join('');
+
+            list.innerHTML += `
+                <div class="bill-card">
+                    <div class="bill-header">
+                        <strong>👤 ${data.customer}</strong>
+                        <small>📅 ${date}</small>
+                    </div>
+                    <div style="color:#666; font-size:12px; margin-bottom:5px;">الصنف | كمية | سعر | إجمالي</div>
+                    ${itemsHTML}
+                    <div class="total-line">الإجمالي الكلي: ${data.totalAmount} ر.س</div>
+                </div>
+            `;
+        });
+    });
+</script>
+</body>
+</html>
