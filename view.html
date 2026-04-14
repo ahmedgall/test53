@@ -10,13 +10,15 @@
     <style>
         :root { --primary: #10b981; --dark: #0f172a; --bg: #f1f5f9; }
         * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-        body { background: var(--bg); padding: 20px; }
+        body { background: var(--bg); padding: 20px; margin: 0; }
         .history-container { max-width: 800px; margin: auto; }
         .bill-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .bill-header { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
         .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 14px; padding: 5px 0; border-bottom: 1px dashed #f1f1f1; }
         .total-line { text-align: left; font-weight: bold; color: var(--primary); font-size: 18px; margin-top: 10px; }
         .back-btn { display: inline-block; text-decoration: none; color: white; background: var(--dark); padding: 10px 20px; border-radius: 10px; margin-bottom: 20px; }
+        h1 { font-size: 24px; color: var(--dark); margin-bottom: 10px; }
+        #loadingStatus { color: var(--primary); font-weight: bold; margin-bottom: 15px; display: none; }
     </style>
 </head>
 <body>
@@ -24,10 +26,12 @@
 <div class="history-container">
     <a href="index.html" class="back-btn">⬅️ العودة للإضافة</a>
     <h1>📂 سجل الفواتير السحابي</h1>
+    <div id="loadingStatus">🔄 جاري ترجمة وتحديث البيانات...</div>
     <div id="logsList">جاري تحميل الفواتير...</div>
 </div>
 
 <script>
+    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyAzcP_T8x5ouwwKkhadtBTdsUxk3XqwJec",
         authDomain: "vexa-4b2fb.firebaseapp.com",
@@ -39,26 +43,56 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    db.collection("invoices").orderBy("timestamp", "desc").onSnapshot(snap => {
+    // دالة الترجمة الذكية (مجانية وبدون API Key)
+    async function translateText(text) {
+        if(!text || text.trim() === "" || /[أ-ي]/.test(text)) return text; // إذا كان النص عربياً لا تترجمه
+        
+        try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ar&dt=t&q=${encodeURIComponent(text)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            return result[0][0][0];
+        } catch (e) {
+            console.error("Translation Error:", e);
+            return text; // في حال الفشل ارجع النص الأصلي
+        }
+    }
+
+    // استماع للتغييرات في Firebase
+    db.collection("invoices").orderBy("timestamp", "desc").onSnapshot(async snap => {
         const list = document.getElementById('logsList');
-        list.innerHTML = '';
-        snap.forEach(doc => {
+        const loader = document.getElementById('loadingStatus');
+        
+        loader.style.display = 'block'; // إظهار حالة التحميل أثناء الترجمة
+        
+        let finalHTML = '';
+
+        // نستخدم for...of لدعم العمليات المتزامنة (await)
+        for (const doc of snap.docs) {
             const data = doc.data();
             const date = data.timestamp ? data.timestamp.toDate().toLocaleString('ar-EG') : 'جاري الحفظ...';
             
-            let itemsHTML = data.billItems.map(i => `
-                <div class="item-row">
-                    <span>${i.item}</span>
-                    <span>${i.qty}</span>
-                    <span>${i.price}</span>
-                    <span style="font-weight:bold">${i.total}</span>
-                </div>
-            `).join('');
+            // ترجمة اسم العميل
+            const customerName = await translateText(data.customer);
+            
+            let itemsHTML = '';
+            for (const item of data.billItems) {
+                // ترجمة اسم المنتج/الصنف
+                const itemName = await translateText(item.item);
+                itemsHTML += `
+                    <div class="item-row">
+                        <span>${itemName}</span>
+                        <span>${item.qty}</span>
+                        <span>${item.price}</span>
+                        <span style="font-weight:bold">${item.total}</span>
+                    </div>
+                `;
+            }
 
-            list.innerHTML += `
+            finalHTML += `
                 <div class="bill-card">
                     <div class="bill-header">
-                        <strong>👤 ${data.customer}</strong>
+                        <strong>👤 ${customerName}</strong>
                         <small>📅 ${date}</small>
                     </div>
                     <div style="color:#666; font-size:12px; margin-bottom:5px;">الصنف | كمية | سعر | إجمالي</div>
@@ -66,8 +100,12 @@
                     <div class="total-line">الإجمالي الكلي: ${data.totalAmount} ر.س</div>
                 </div>
             `;
-        });
+        }
+
+        list.innerHTML = finalHTML;
+        loader.style.display = 'none'; // إخفاء حالة التحميل
     });
 </script>
+
 </body>
 </html>
